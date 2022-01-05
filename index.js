@@ -1,33 +1,24 @@
-const { ApolloServer } = require('apollo-server-express');
-const { gql } = require('apollo-server-express');
 const mongoose = require('mongoose');
 const express = require('express');
-
-const typeDefs = require('./typeDefs');
-const resolvers = require('./resolver')
-
+var app = express()
+const cors = require('cors');
+const exerciseRouter = require('./routes/exercises')
+const usersRouter = require('./routes/users')
 const PORT = 7002;
 
+app.use(cors())
+app.use(express.json());
 
+app.use('/exercises', exerciseRouter)
+app.use('/users', usersRouter)
 
-const startServer = async () => {
-  const app = express();
-  const apolloServer = new ApolloServer({
-    typeDefs,
-    resolvers
-  })
-  await apolloServer.start()
-  apolloServer.applyMiddleware({ app: app });
-  
-app.listen(PORT, ()=> {
+app.get('/', function (req, res, next) {
+  res.json({msg: 'This is CORS-enabled for all origins!'})
+})
 
-    console.log(`hmm listeneing ****${PORT}`);
-
+app.listen(PORT, () => {
+  console.log(`hmm listeneing ****${PORT}`);
 });
-}
-
-startServer();
-
 
 mongoose.connect('mongodb+srv://manasa:manusankar@cluster0.fyur2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
